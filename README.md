@@ -11,6 +11,8 @@ To backup - prefix lines by # if you want to omit a partition
 ```
   sh /mnt/backup-dir/backup.sh
 ```
+If a partition is complete a .ok file will be touched.
+You can resume, succeeded partitions will be skipped.
 
 To restore:
 ```
