@@ -97,7 +97,11 @@ ok_guard(){
 
 # PARTITION TABLE
 ok_guard "$TARGET_DIR/$PARTITION_TABLE_FILE.ok" "sfdisk --dump "$DISK" > \"$TARGET_DIR/$PARTITION_TABLE_FILE\"" >> $BACKUP_SCRIPT
-echo "sfdisk \$TARGET_DEV < \$SOURCE_DIR/$PARTITION_TABLE_FILE " >> $RESTORE_SCRIPT
+
+
+echo "# On Ubuntu you cannot write the microsoft reserved partition eventually, so change the type" >> $RESTORE_SCRIPT
+# TODO -> is this compilicated way required ?
+echo "cat  \$SOURCE_DIR/$PARTITION_TABLE_FILE  | sed 's@E3C9E316-0B5C-4DB8-817D-F92DF00215AE@EBD0A0A2-B9E5-4433-87C0-68B6B72699C7@' | sfdisk \$TARGET_DEV  " >> $RESTORE_SCRIPT
 
 # EACH PARTITION
 for PART in $PARTITIONS; do
@@ -123,6 +127,9 @@ for PART in $PARTITIONS; do
     esac
 
 done
+
+echo "# FIX type of >>microsoft reserved partition<< which eventually makes it readonly ?" >> $RESTORE_SCRIPT
+echo "cat  \$SOURCE_DIR/$PARTITION_TABLE_FILE  | sfdisk \$TARGET_DEV  " >> $RESTORE_SCRIPT
 
 echo "===BACKUP_SCRIPT"
 cat $BACKUP_SCRIPT
